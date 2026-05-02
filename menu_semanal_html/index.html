@@ -172,7 +172,7 @@
         let bg=excl?"#fadbd8":v?colorNombre(v):(v===null?"#d5d8dc":"#ecf0f1");
         if(mom==="Desayuno"&&v&&!excl)bg=DATA.colores.desayuno||"#D7BDE2";
         const txt=excl?"\u2716":(v||"");
-        h+='<td><div class="cell'+(excl?' excluded':'')+'" style="background:'+bg+'" onmousedown="cellDown(\''+d+"','"+mom+"')" onmouseup="cellUp('"+d+"','"+mom+"')" ontouchstart="cellDown('"+d+"','"+mom+"')" ontouchend="cellUp('"+d+"','"+mom+"')">';
+        h+='<td><div class="cell'+(excl?' excluded':'')+'" style="background:'+bg+'" onmousedown="cellDown(\''+d+"\',\'"+mom+"\')" onmouseup="cellUp(\''+d+"\',\'"+mom+"\')" ontouchstart="cellDown(\''+d+"\',\'"+mom+"\')" ontouchend="cellUp(\''+d+"\',\'"+mom+"\')">';
         h+='<span class="nombre">'+txt+"</span></div></td>";
       });
       h+="</tr>";
