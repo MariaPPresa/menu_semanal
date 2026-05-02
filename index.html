@@ -22,10 +22,10 @@
   td{padding:3px;text-align:center;vertical-align:top}
   .cell{border-radius:6px;padding:6px
   3px;min-height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.78em;color:#000;position:relative}
-  .excl-btn{position:absolute;top:1px;right:3px;font-size:.65em;cursor:pointer;opacity:.4;background:none;border:none;color:#e74c3c}
-  .excl-btn:hover{opacity:1}
-  .regen-btn{position:absolute;bottom:1px;right:3px;font-size:.6em;cursor:pointer;opacity:.3;background:none;border:none}
-  .regen-btn:hover{opacity:1}
+  
+  
+  
+  
   .excluded .nombre{text-decoration:line-through;opacity:.3}
   .th-momento{background:#5d6d7e;min-width:55px}
   .compra{min-width:180px;max-width:220px;background:#fff;border-radius:8px;padding:10px;box-shadow:0 2px 4px
@@ -129,6 +129,7 @@
   }
 
   function regenerarCelda(dia,momento){
+  var k2=dia+"|"+momento;if(exclusiones.has(k2))exclusiones.delete(k2);
     const t=tempActual(),hora=momento==="Comida"?"comida":"cena";
     if(momento==="Desayuno"){menu[dia+"|Desayuno"]=pick(DATA.desayunos);renderMenu();return;}
     const pool=filtrar(hora,t).filter(r=>r.tipo!=="segundo");
@@ -139,7 +140,11 @@
     menu[dia+"|"+momento]=txt;renderMenu();
   }
 
-  function toggleExcl(dia,momento){
+  let pressTimer=null;
+function cellDown(e,dia,momento){e.preventDefault();pressTimer=setTimeout(()=>{toggleExcl(dia,momento);pressTimer=null;},500);}
+function cellUp(e,dia,momento){e.preventDefault();if(pressTimer){clearTimeout(pressTimer);pressTimer=null;regenerarCelda(dia,momento);}}
+
+function toggleExcl(dia,momento){
     const k=dia+"|"+momento;
     if(exclusiones.has(k))exclusiones.delete(k);else{exclusiones.add(k);menu[k]=null;}
     renderMenu();
@@ -155,9 +160,7 @@
         let bg=excl?"#fadbd8":v?colorNombre(v):(v===null?"#d5d8dc":"#ecf0f1");
         if(mom==="Desayuno"&&v&&!excl)bg=DATA.colores.desayuno||"#D7BDE2";
         const txt=excl?"\u2716":(v||"");
-        h+='<td><div class="cell'+(excl?' excluded':'')+'" style="background:'+bg+'">';
-        h+='<button class="excl-btn" onclick="toggleExcl(\''+d+"','"+mom+"')\">"+(excl?"\u2714":"\u2716")+"</button>";
-        if(v&&!excl)h+='<button class="regen-btn" onclick="regenerarCelda(\''+d+"','"+mom+"')\">&#8635;</button>";
+      h+='<td><div class=\"cell'+(excl?' excluded':'')+'\" style=\"background:'+bg+'\" onmousedown=\"cellDown(event,\''+d+'\',\''+mom+'\')\" onmouseup=\"cellUp(event,\''+d+'\',\''+mom+'\')\" ontouchstart=\"cellDown(event,\''+d+'\',\''+mom+'\')\" ontouchend=\"cellUp(event,\''+d+'\',\''+mom+'\')\">';
         h+='<span class="nombre">'+txt+"</span></div></td>";
       });h+="</tr>";
     });h+="</tbody>";tabla.innerHTML=h;
