@@ -1,27 +1,21 @@
 import streamlit as st
 import random
 from recetas import RECETAS, INGREDIENTES, COLORES_CATEGORIA, DESAYUNOS, FRUTAS, Receta
-from logica import generar_menu, temporada_actual, color_para_nombre, recetas_disponibles, nombre_con_segundo, DIAS, MOMENTOS
+from logica import generar_menu, temporada_actual, color_para_nombre, recetas_disponibles, nombre_con_segundo, fruta_semana, DIAS, MOMENTOS
 
 st.set_page_config(page_title="Menu Semanal", page_icon="🥗", layout="wide")
 
 if "menu" not in st.session_state:
     st.session_state.menu = {}
 
-# Categorias de ingredientes para mostrar ordenados
-CATS_INGREDIENTES = {
-    "Carnes": [i for i in INGREDIENTES if any(x in i for x in ["pollo","pavo","ternera","cerdo","lomo","jamon","lacon","tocino","chorizo","morcilla","picadillo","picada","salchicha","chistorra","butifarra","chuleta","cordero","costill"])],
-    "Pescados": [i for i in INGREDIENTES if any(x in i for x in ["salmon","atun","dorada","lubina","bacalao","gambas","sepia","mejillones","zamburina","sardina","gula"])],
-    "Cereales/Legumbres": [i for i in INGREDIENTES if any(x in i for x in ["pasta","arroz","fideua","lenteja","garbanzo","fabe","guisante"])],
-    "Verduras": [i for i in INGREDIENTES if any(x in i for x in ["tomate","lechuga","cebolla","ajo","pimiento","zanahoria","pepinillo","patata","calabac","espinaca","frejol","champi","berenje","calabaza","maiz","aguacate","boniato","seta","puerro","esparrago"])],
-    "Otros": [i for i in INGREDIENTES if any(x in i for x in ["huevo","queso","mozza","leche","nata","curry","pan","limon","aceituna","vino","sal gorda","salsa","tomate frito","caldo","harina","levadura","nugget","croqueta","rollito"])],
-    "Frutas": [i for i in INGREDIENTES if any(x in i for x in ["manzana","platano","naranja","fresa","kiwi","melocoton","frutos","uva","cereal","tostada"])],
-}
-
 # --- Layout: menu a la izquierda, compra a la derecha ---
 st.title(f"🥗 Menu Semanal - {temporada_actual().capitalize()}")
 
 # --- Generar ---
+if "fruta" not in st.session_state:
+    st.session_state.fruta = fruta_semana()
+st.markdown(f"**\U0001f34e Fruta de la semana: {st.session_state.fruta}**")
+
 if st.button("🍽 Generar Menu", type="primary"):
     excl = set()
     for dia in DIAS:
@@ -67,14 +61,15 @@ with col_menu:
                             if dia == "Sábado":
                                 nuevo = "Desayuno libre 🎉"
                             else:
-                                nuevo = f"{random.choice(DESAYUNOS)} + {random.choice(FRUTAS)}"
+                                nuevo = random.choice(DESAYUNOS)
                         else:
                             hora = "comida" if momento == "Comida" else "cena"
-                            pool = recetas_disponibles(hora, temporada, st.session_state.get("nevera", set()))
+                            nevera = st.session_state.get("nevera", set())
+                            pool = [r for r in recetas_disponibles(hora, temporada, nevera) if r.tipo != "segundo"]
                             if pool:
                                 r = random.choice(pool)
                                 if r.tipo == "acompanamiento":
-                                    segs = recetas_disponibles(hora, temporada, st.session_state.get("nevera", set()), "segundo")
+                                    segs = recetas_disponibles(hora, temporada, nevera, "segundo")
                                     nuevo = nombre_con_segundo(r, random.choice(segs)) if segs else r.nombre
                                 else:
                                     nuevo = r.nombre
@@ -97,32 +92,19 @@ with col_compra:
                         if r.nombre == nombre:
                             todos_ing.update(r.ingredientes)
                             break
-        nevera = st.session_state.get("nevera", set())
-        faltan = sorted(todos_ing - nevera)
-        if faltan:
-            for ing in faltan:
-                st.write(f"- {ing}")
-        else:
+        st.caption("Tacha lo que ya tengas")
+        tachados = st.session_state.get("tachados", set())
+        for ing in sorted(todos_ing):
+            if st.checkbox(ing, value=ing in tachados, key=f"compra_{ing}"):
+                tachados.add(ing)
+            else:
+                tachados.discard(ing)
+        st.session_state.tachados = tachados
+        st.session_state.nevera = tachados
+        pendientes = len(todos_ing - tachados)
+        if pendientes == 0:
             st.success("Todo listo!")
+        else:
+            st.caption(f"{pendientes} ingredientes pendientes")
     else:
         st.caption("Genera un menu primero")
-
-# --- Nevera: ingredientes por categoria con checkboxes ---
-st.markdown("---")
-st.subheader("🧊 Nevera / Congelador")
-st.caption("Marca los ingredientes que tienes")
-
-nevera = st.session_state.get("nevera", set())
-nueva_nevera = set()
-
-for cat, ings in CATS_INGREDIENTES.items():
-    if not ings:
-        continue
-    st.markdown(f"**{cat}**")
-    cols = st.columns(5)
-    for i, ing in enumerate(ings):
-        with cols[i % 5]:
-            if st.checkbox(ing, value=ing in nevera, key=f"nev_{ing}"):
-                nueva_nevera.add(ing)
-
-st.session_state.nevera = nueva_nevera

@@ -14,7 +14,7 @@ NO incluyas aceite de oliva en ingredientes.
 
 
 class Receta:
-    def __init__(self, nombre, categoria, ingredientes, temporada="todas", hora="comida", tipo="completo", fritura=False):
+    def __init__(self, nombre, categoria, ingredientes, temporada="todas", hora="comida", tipo="completo", fritura=False, raciones=1):
         self.nombre = nombre
         self.categoria = categoria
         self.ingredientes = ingredientes
@@ -22,6 +22,7 @@ class Receta:
         self.hora = hora
         self.tipo = tipo
         self.fritura = fritura
+        self.raciones = raciones
 
     def en_temporada(self, temp):
         if self.temporada == "todas":
@@ -45,25 +46,26 @@ class Receta:
 RECETAS = [
     # --- PASTA/ARROZ ---
     Receta("Fideos chinos", "pasta_arroz", ["pasta", "calabacin", "pimiento", "tomate", "ajo", "cebolla"], "todas", "comida"),
-    Receta("Arroz con pollo y verduras", "pasta_arroz", ["arroz", "pollo", "pimiento", "cebolla", "zanahoria"], "todas", "comida"),
+    Receta("Arroz con pollo y verduras", "pasta_arroz", ["arroz", "pollo", "pimiento", "cebolla", "zanahoria"], "todas", "comida", raciones=2),
     Receta("Pasta carbonara", "pasta_arroz", ["pasta", "huevo", "queso"], "todas", "comida"),
     Receta("Arroz blanco con huevo y salchicha", "pasta_arroz", ["arroz", "huevo", "salchicha"], "todas", "comida"),
     Receta("Pasta con picadillo", "pasta_arroz", ["pasta", "picadillo", "tomate frito"], "todas", "comida"),
     Receta("Pasta bolonesa", "pasta_arroz", ["pasta", "carne picada", "tomate frito"], "todas", "comida"),
-    Receta("Fideua", "pasta_arroz", ["fideua", "atun en lata", "gambas", "sepia", "caldo de marisco", "mejillones", "cebolla", "pimiento", "ajo"], "todas", "comida"),
-    Receta("Paella", "pasta_arroz", ["arroz", "gambas", "ajo", "pimiento", "cebolla", "sepia", "mejillones", "caldo de marisco"], "todas", "comida"),
-    Receta("Paella de carne", "pasta_arroz", ["arroz", "pimiento", "costillas de cerdo", "cebolla", "ajo", "pollo", "caldo de carne"], "todas", "comida"),
+    Receta("Fideua", "pasta_arroz", ["fideua", "atun en lata", "gambas", "sepia", "caldo de marisco", "mejillones", "cebolla", "pimiento", "ajo"], "todas", "comida", raciones=2),
+    Receta("Paella", "pasta_arroz", ["arroz", "gambas", "ajo", "pimiento", "cebolla", "sepia", "mejillones", "caldo de marisco"], "todas", "comida", raciones=2),
+    Receta("Paella de carne", "pasta_arroz", ["arroz", "pimiento", "costillas de cerdo", "cebolla", "ajo", "pollo", "caldo de carne"], "todas", "comida", raciones=2),
     Receta("Espaguetis con zamburinas", "pasta_arroz", ["pasta", "zamburinas en lata"], "todas", "comida"),
 
     # --- LEGUMBRES ---
-    Receta("Lentejas", "legumbres", ["lentejas", "zanahoria", "patata", "cebolla", "ajo", "pimiento", "jamon", "chorizo"], ["otono", "invierno", "primavera"], "comida"),
-    Receta("Garbanzos con bacalao y espinacas", "legumbres", ["garbanzos", "espinacas", "bacalao", "patata", "zanahoria", "tomate frito", "cebolla", "pimiento"], ["otono", "invierno", "primavera"], "comida"),
-    Receta("Fabes", "legumbres", ["fabes", "lacon", "tocino", "morcilla asturiana", "chorizo"], ["otono", "invierno"], "comida"),
+    Receta("Lentejas", "legumbres", ["lentejas", "zanahoria", "patata", "cebolla", "ajo", "pimiento", "jamon", "chorizo"], ["otono", "invierno", "primavera"], "comida", raciones=2),
+    Receta("Garbanzos con bacalao y espinacas", "legumbres", ["garbanzos", "espinacas", "bacalao", "patata", "zanahoria", "tomate frito", "cebolla", "pimiento"], ["otono", "invierno", "primavera"], "comida", raciones=2),
+    Receta("Fabes", "legumbres", ["fabes", "lacon", "tocino", "morcilla asturiana", "chorizo"], ["otono", "invierno"], "comida", raciones=2),
     Receta("Guisantes con jamon", "legumbres", ["guisantes", "jamon", "cebolla"], ["primavera", "verano"], "comida", "acompanamiento"),
     Receta("Garbanzos con chorizo", "legumbres", ["garbanzos", "chorizo"], "todas", "comida"),
     Receta("Garbanzos con vinagreta", "legumbres", ["garbanzos", "huevo", "pimiento piquillo", "pepinillo", "cebolla"], ["primavera", "verano"], "comida"),
-    Receta("Garbanzos con curry", "legumbres", ["garbanzos", "curry", "nata", "cebolla", "zanahoria", "pimiento", "pollo"], "todas", "comida"),
-    Receta("Fabes pintes", "legumbres", ["fabes pintes", "zanahoria", "patata", "cebolla", "pimiento", "jamon", "chorizo"], ["otono", "invierno", "primavera"], "comida"),
+    Receta("Garbanzos con curry", "legumbres", ["garbanzos", "curry", "nata", "cebolla", "zanahoria", "pimiento", "pollo"], "todas", "comida", raciones=2),
+    Receta("Arroz con curry", "pasta_arroz", ["arroz", "curry", "nata", "cebolla", "zanahoria", "pimiento", "pollo"], "todas", "comida", raciones=2),
+    Receta("Fabes pintes", "legumbres", ["fabes pintes", "zanahoria", "patata", "cebolla", "pimiento", "jamon", "chorizo"], ["otono", "invierno", "primavera"], "comida", raciones=2),
 
     # --- PESCADO AZUL ---
     Receta("Salmon al horno", "pescado_azul", ["salmon", "cebolla", "patata", "ajo", "limon"], "todas", "comida"),
@@ -90,13 +92,13 @@ RECETAS = [
 
     # --- CARNE ROJA ---
     Receta("Filete de ternera", "carne_roja", ["filete de ternera"], "todas", ["comida", "cena"], "segundo"),
-    Receta("Estofado de ternera", "carne_roja", ["tacos de ternera", "patata", "zanahoria", "cebolla", "ajo", "vino tinto", "pimiento"], ["otono", "invierno"], "comida"),
+    Receta("Estofado de ternera", "carne_roja", ["tacos de ternera", "patata", "zanahoria", "cebolla", "ajo", "vino tinto", "pimiento"], ["otono", "invierno"], "comida", raciones=2),
     Receta("Chuletillas de cordero", "carne_blanca", ["chuletillas de cordero"], "todas", ["comida", "cena"], "segundo"),
 
     # --- PLATOS CON HUEVO ---
     Receta("Tortilla de patata", "fritura", ["huevo", "patata", "cebolla"], "todas", "cena"),
     Receta("Revuelto de jamon", "carne_blanca", ["huevo", "jamon"], "todas", "cena"),
-    Receta("Tortilla de espinacas", "verdura", ["huevo", "espinacas", "cebolla"], "todas", "cena"),
+    Receta("Tortilla de espinacas", "verdura", ["huevo", "espinacas", "cebolla"], "todas", "cena", "acompañamiento"),
     Receta("Revuelto de champinones", "verdura", ["huevo", "champinones", "ajo"], ["otono", "invierno"], "cena"),
     Receta("Huevos rotos con patata y morcilla", "fritura", ["huevo", "morcilla de arroz", "patata"], "todas", "cena"),
     Receta("Huevos rotos con patata y butifarra", "fritura", ["huevo", "butifarra", "patata"], "todas", "cena"),
@@ -126,7 +128,8 @@ RECETAS = [
     Receta("Tostas de tomate y mozzarella", "verdura", ["tomate", "mozzarella"], "todas", "cena"),
     Receta("Bocata de lomo", "carne_blanca", ["lomo", "queso", "pimiento"], "todas", "cena"),
     Receta("Empanada de atún", "pescado_azul", ["atun en lata", "pimiento de piquillo", "cebolla", "huevo"], "todas", "cena"),
-    Receta("Patatas", "verdura", ["patata"], "todas", "acompanamiento"),
+    Receta("Patata cocida", "verdura", ["patata"], "todas", "acompanamiento"),
+    Receta("Patatas fritas", "fritura", ["patata"], "todas", "acompanamiento"),
     Receta("Arroz", "verdura", ["arroz"], "todas", "acompanamiento"),
 ]
 
@@ -167,11 +170,22 @@ COLORES_CATEGORIA = {
 
 DESAYUNOS = [
     "Yogur con cereales y fruta",
+    "Yogur con frutos rojos",
     "Tostadas con tomate y jamon",
     "Tostadas con huevo",
-    "Cereales con leche y fruta",
-    "Tostadas con queso fresco y fruta",
-    "Yogur con fresas",
+    "Tostadas con aguacate",
+    "Tostadas con queso fresco y mermelada",
+    "Tostadas con mantequilla y miel",
+    "Tostadas con tomate y queso",
+    "Cereales con leche",
+    "Porridge de avena",
 ]
+
+FRUTAS_TEMPORADA = {
+    "invierno": ["naranja", "mandarina", "kiwi", "manzana", "pera", "platano"],
+    "primavera": ["fresas", "platano", "manzana", "kiwi", "piña"],
+    "verano": ["melocoton", "sandia", "melon", "nectarina", "cerezas", "paraguayo", "albaricoque"],
+    "otono": ["uvas", "higos", "granada", "manzana", "pera", "caqui"],
+}
 
 FRUTAS = ["manzana", "platano", "naranja", "fresas", "kiwi", "melocoton", "frutos rojos", "uvas"]

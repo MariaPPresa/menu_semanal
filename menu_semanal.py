@@ -23,9 +23,9 @@ def temporada_actual():
     mes = date.today().month
     if mes in (11, 12, 1, 2):
         return "invierno"
-    elif mes in (3, 4):
+    elif mes in (3, 4, 5):
         return "primavera"
-    elif mes in (5, 6, 7, 8, 9):
+    elif mes in (6, 7, 8, 9):
         return "verano"
     else:
         return "otoño"
@@ -96,7 +96,7 @@ def generar_menu(ingredientes_usuario, exclusiones, celdas_fijas):
 
     # --- Comidas (raciones para 2 días, excepto pescado) ---
     comidas_completas = recetas_disponibles("comida", temporada, ingredientes_usuario, "completo")
-    comidas_acomp = recetas_disponibles("comida", temporada, ingredientes_usuario, "acompañamiento")
+    comidas_acomp = recetas_disponibles("comida", temporada, ingredientes_usuario, "acompanamiento")
     comidas_segundo = recetas_disponibles("comida", temporada, ingredientes_usuario, "segundo")
     comidas_pool = comidas_completas + comidas_acomp
     random.shuffle(comidas_pool)
@@ -106,7 +106,7 @@ def generar_menu(ingredientes_usuario, exclusiones, celdas_fijas):
     dias_comida = [d for d in DIAS if (d, "Comida") not in exclusiones and (d, "Comida") not in celdas_fijas]
     dias_asignados = set()
 
-    def elegir_receta(dia):
+    def elegir_receta(dia, preferir_doble=None):
         nonlocal conteo_huevos, conteo_frituras, conteo_pasta
         idx_dia = DIAS.index(dia)
         recetas_ayer = set()
@@ -125,6 +125,14 @@ def generar_menu(ingredientes_usuario, exclusiones, celdas_fijas):
             opciones = [r for r in comidas_pool if not (conteo_frituras >= 2 and (r.fritura or r.categoria == "fritura"))]
         if not opciones:
             opciones = comidas_pool
+        if preferir_doble is True:
+            dobles = [r for r in opciones if r.raciones == 2]
+            if dobles:
+                opciones = dobles
+        elif preferir_doble is False:
+            simples = [r for r in opciones if r.raciones == 1]
+            if simples:
+                opciones = simples
         receta = random.choice(opciones) if opciones else None
         if not receta:
             return None, None
@@ -146,26 +154,25 @@ def generar_menu(ingredientes_usuario, exclusiones, celdas_fijas):
     # Asignar pares alternos (raciones dobles en dias no consecutivos)
     for dia1, dia2 in pares_alternos:
         if dia1 in dias_comida and dia1 not in dias_asignados:
-            receta, texto = elegir_receta(dia1)
+            receta, texto = elegir_receta(dia1, preferir_doble=True)
             if receta and texto:
                 menu[(dia1, "Comida")] = texto
                 dias_asignados.add(dia1)
-                es_pescado = receta.categoria in ("pescado_azul", "pescado_blanco")
-                if not es_pescado and dia2 in dias_comida and dia2 not in dias_asignados:
+                if receta.raciones == 2 and dia2 in dias_comida and dia2 not in dias_asignados:
                     menu[(dia2, "Comida")] = texto
                     dias_asignados.add(dia2)
 
     # Asignar dias restantes individualmente
     for dia in dias_comida:
         if dia not in dias_asignados:
-            receta, texto = elegir_receta(dia)
+            receta, texto = elegir_receta(dia, preferir_doble=False)
             if receta and texto:
                 menu[(dia, "Comida")] = texto
                 dias_asignados.add(dia)
 
     # --- Cenas ---
     cenas_completas = recetas_disponibles("cena", temporada, ingredientes_usuario, "completo")
-    cenas_acomp = recetas_disponibles("cena", temporada, ingredientes_usuario, "acompañamiento")
+    cenas_acomp = recetas_disponibles("cena", temporada, ingredientes_usuario, "acompanamiento")
     cenas_segundo = recetas_disponibles("cena", temporada, ingredientes_usuario, "segundo")
     cenas_pool = cenas_completas + cenas_acomp
     random.shuffle(cenas_pool)
@@ -201,9 +208,17 @@ def generar_menu(ingredientes_usuario, exclusiones, celdas_fijas):
             if con_huevo:
                 opciones = con_huevo
 
+        if preferir_doble is True:
+            dobles = [r for r in opciones if r.raciones == 2]
+            if dobles:
+                opciones = dobles
+        elif preferir_doble is False:
+            simples = [r for r in opciones if r.raciones == 1]
+            if simples:
+                opciones = simples
         receta = random.choice(opciones) if opciones else None
         if receta:
-            if receta.tipo == "acompañamiento" and cenas_segundo:
+            if receta.tipo == "acompanamiento" and cenas_segundo:
                 segundo = random.choice(cenas_segundo)
                 texto = nombre_con_segundo(receta, segundo)
                 if receta.lleva_huevo() or segundo.lleva_huevo():
@@ -400,7 +415,7 @@ class App:
             pool = recetas_disponibles(hora, temporada, self.ingredientes_seleccionados)
             if pool:
                 receta = random.choice(pool)
-                if receta.tipo == "acompañamiento":
+                if receta.tipo == "acompanamiento":
                     segundos = recetas_disponibles(hora, temporada, self.ingredientes_seleccionados, "segundo")
                     if segundos:
                         nuevo = nombre_con_segundo(receta, random.choice(segundos))
