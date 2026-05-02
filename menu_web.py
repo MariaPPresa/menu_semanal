@@ -41,7 +41,7 @@ with col_menu:
     # Filas con X para excluir y boton regenerar
     for momento in MOMENTOS:
         row = st.columns([1]+[2]*7)
-        row[0].markdown(f"**{momento}**")
+        row[0].markdown(f"<span style=font-size:11px;font-weight:bold;white-space:nowrap>{momento}</span>", unsafe_allow_html=True)
         for j,dia in enumerate(DIAS):
             with row[j+1]:
                 excl_key = f"excl_{dia}_{momento}"
