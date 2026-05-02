@@ -5,6 +5,15 @@ from logica import generar_menu, temporada_actual, color_para_nombre, recetas_di
 
 st.set_page_config(page_title="Menu Semanal", page_icon="🥗", layout="wide")
 
+st.markdown("""
+<style>
+    .block-container {max-width: 100%; padding: 1rem;}
+    @media (max-width: 768px) {
+        .block-container {overflow-x: auto;}
+        [data-testid="column"] {min-width: 80px;}
+    }
+</style>
+""", unsafe_allow_html=True)
 if "menu" not in st.session_state:
     st.session_state.menu = {}
 
