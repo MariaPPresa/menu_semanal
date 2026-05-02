@@ -101,10 +101,12 @@ with col_compra:
                 tachados.discard(ing)
         st.session_state.tachados = tachados
         st.session_state.nevera = tachados
-        pendientes = len(todos_ing - tachados)
-        if pendientes == 0:
+        pendientes = sorted(todos_ing - tachados)
+        if not pendientes:
             st.success("Todo listo!")
-        else:
+            st.caption(f"{len(pendientes)} ingredientes pendientes")
+            lista_txt = chr(10).join(pendientes)
+            st.code(lista_txt, language=None)
             st.caption(f"{pendientes} ingredientes pendientes")
     else:
         st.caption("Genera un menu primero")

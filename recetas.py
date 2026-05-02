@@ -173,12 +173,12 @@ DESAYUNOS = [
     "Yogur con frutos rojos",
     "Tostadas con tomate y jamon",
     "Tostadas con huevo",
-    "Tostadas con aguacate",
-    "Tostadas con queso fresco y mermelada",
+    "Tostadas con queso y mermelada",
     "Tostadas con mantequilla y miel",
     "Tostadas con tomate y queso",
     "Cereales con leche",
-    "Porridge de avena",
+    "Tostadas con hummus",
+    "Tostada con aceite y pechuga de pavo"
 ]
 
 FRUTAS_TEMPORADA = {
