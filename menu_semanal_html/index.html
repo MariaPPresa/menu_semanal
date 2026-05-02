@@ -128,26 +128,43 @@
     renderMenu();
   }
 
-  function regenerarCelda(dia,momento){
+ function regenerarCelda(dia,momento){
+    const k=dia+"|"+momento;
+    if(exclusiones.has(k)){exclusiones.delete(k);}
     const t=tempActual(),hora=momento==="Comida"?"comida":"cena";
-    if(momento==="Desayuno"){menu[dia+"|Desayuno"]=pick(DATA.desayunos);renderMenu();return;}
+
+  if(momento==="Desayuno"){menu[k]=pick(DATA.desayunos);renderMenu();return;
+  }
     const pool=filtrar(hora,t).filter(r=>r.tipo!=="segundo");
     const segs=filtrar(hora,t,"segundo");
     if(!pool.length)return;
     const rec=pick(pool);let txt;
-    if(rec.tipo==="acompanamiento"&&segs.length)txt=rec.nombre+" + "+pick(segs).nombre;else txt=rec.nombre;
-    menu[dia+"|"+momento]=txt;renderMenu();
+    if(rec.tipo==="acompanamiento"&&segs.length)txt=rec.nombre+" +  "+pick(segs).nombre;else txt=rec.nombre;
+    menu[k]=txt;renderMenu();
   }
 
-  function toggleExcl(dia,momento){
+  let pressTimer=null;
+  function cellDown(dia,momento){
+
+  pressTimer=setTimeout(()=>{toggleExcl(dia,momento);pressTimer=null;},500);
+  }
+  function cellUp(dia,momento){
+
+  if(pressTimer){clearTimeout(pressTimer);pressTimer=null;regenerarCelda(dia
+  ,momento);}
+  }
+ function toggleExcl(dia,momento){
     const k=dia+"|"+momento;
-    if(exclusiones.has(k))exclusiones.delete(k);else{exclusiones.add(k);menu[k]=null;}
+
+  if(exclusiones.has(k))exclusiones.delete(k);else{exclusiones.add(k);menu[k
+  ]=null;}
     renderMenu();
   }
-
-  function renderMenu(){
+ function renderMenu(){
     const tabla=document.getElementById("tabla");
-    let h='<thead><tr><th class="th-momento"></th>';DIAS.forEach(d=>h+="<th>"+d+"</th>");h+="</tr></thead><tbody>";
+    let h='<thead><tr><th class="th-momento"></th>';
+    DIAS.forEach(d=>h+="<th>"+d+"</th>");
+    h+="</tr></thead><tbody>";
     MOMENTOS.forEach(mom=>{
       h+='<tr><th class="th-momento">'+mom+"</th>";
       DIAS.forEach(d=>{
@@ -155,12 +172,13 @@
         let bg=excl?"#fadbd8":v?colorNombre(v):(v===null?"#d5d8dc":"#ecf0f1");
         if(mom==="Desayuno"&&v&&!excl)bg=DATA.colores.desayuno||"#D7BDE2";
         const txt=excl?"\u2716":(v||"");
-        h+='<td><div class="cell'+(excl?' excluded':'')+'" style="background:'+bg+'">';
-        h+='<button class="excl-btn" onclick="toggleExcl(\''+d+"','"+mom+"')\">"+(excl?"\u2714":"\u2716")+"</button>";
-        if(v&&!excl)h+='<button class="regen-btn" onclick="regenerarCelda(\''+d+"','"+mom+"')\">&#8635;</button>";
+        h+='<td><div class="cell'+(excl?' excluded':'')+'" style="background:'+bg+'" onmousedown="cellDown(\''+d+"','"+mom+"')" onmouseup="cellUp('"+d+"','"+mom+"')" ontouchstart="cellDown('"+d+"','"+mom+"')" ontouchend="cellUp('"+d+"','"+mom+"')">';
         h+='<span class="nombre">'+txt+"</span></div></td>";
-      });h+="</tr>";
-    });h+="</tbody>";tabla.innerHTML=h;
+      });
+      h+="</tr>";
+    });
+    h+="</tbody>";
+    tabla.innerHTML=h;
     renderCompra();
   }
 
