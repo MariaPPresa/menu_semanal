@@ -11,9 +11,9 @@ def temporada_actual():
     mes = date.today().month
     if mes in (11, 12, 1, 2):
         return "invierno"
-    elif mes in (3, 4):
+    elif mes in (3, 4, 5):
         return "primavera"
-    elif mes in (5, 6, 7, 8, 9):
+    elif mes in (6, 7, 8, 9):
         return "verano"
     else:
         return "otoño"
